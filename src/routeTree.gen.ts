@@ -10,33 +10,73 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GraphRouteImport } from './routes/graph'
+import { Route as LibraryRouteImport } from './routes/library'
+import { Route as ReaderRouteImport } from './routes/reader'
+import { Route as VirtualLibraryRouteImport } from './routes/virtual-library'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GraphRoute = GraphRouteImport.update({
+  id: '/graph',
+  path: '/graph',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReaderRoute = ReaderRouteImport.update({
+  id: '/reader',
+  path: '/reader',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VirtualLibraryRoute = VirtualLibraryRouteImport.update({
+  id: '/virtual-library',
+  path: '/virtual-library',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/graph': typeof GraphRoute
+  '/library': typeof LibraryRoute
+  '/reader': typeof ReaderRoute
+  '/virtual-library': typeof VirtualLibraryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/graph': typeof GraphRoute
+  '/library': typeof LibraryRoute
+  '/reader': typeof ReaderRoute
+  '/virtual-library': typeof VirtualLibraryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/graph': typeof GraphRoute
+  '/library': typeof LibraryRoute
+  '/reader': typeof ReaderRoute
+  '/virtual-library': typeof VirtualLibraryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/graph' | '/library' | '/reader' | '/virtual-library'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/graph' | '/library' | '/reader' | '/virtual-library'
+  id: '__root__' | '/' | '/graph' | '/library' | '/reader' | '/virtual-library'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GraphRoute: typeof GraphRoute
+  LibraryRoute: typeof LibraryRoute
+  ReaderRoute: typeof ReaderRoute
+  VirtualLibraryRoute: typeof VirtualLibraryRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +88,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/graph': {
+      id: '/graph'
+      path: '/graph'
+      fullPath: '/graph'
+      preLoaderRoute: typeof GraphRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reader': {
+      id: '/reader'
+      path: '/reader'
+      fullPath: '/reader'
+      preLoaderRoute: typeof ReaderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/virtual-library': {
+      id: '/virtual-library'
+      path: '/virtual-library'
+      fullPath: '/virtual-library'
+      preLoaderRoute: typeof VirtualLibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GraphRoute: GraphRoute,
+  LibraryRoute: LibraryRoute,
+  ReaderRoute: ReaderRoute,
+  VirtualLibraryRoute: VirtualLibraryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
