@@ -26,9 +26,9 @@ const bookQuery = (bookId: string) =>
 
 export const Route = createFileRoute("/reader")({
   validateSearch: (search: Record<string, unknown>): ReaderSearch => ({
-    book: typeof search.book === "string" && search.book ? search.book : "notes-on-the-analytical-engine",
-    t: Number(search.t) || 0,
-    view: search.view === "read" ? "read" : "listen",
+    book: typeof search['book'] === "string" && search['book'] ? (search['book'] as string) : "notes-on-the-analytical-engine",
+    t: Number(search['t']) || 0,
+    view: search['view'] === "read" ? "read" : "listen",
   }),
   loaderDeps: ({ search: { book } }) => ({ book }),
   loader: ({ context, deps }) => context.queryClient.ensureQueryData(bookQuery(deps.book)),

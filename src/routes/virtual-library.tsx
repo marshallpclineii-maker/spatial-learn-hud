@@ -19,7 +19,7 @@ const booksQuery = queryOptions({
 
 export const Route = createFileRoute("/virtual-library")({
   validateSearch: (search: Record<string, unknown>): VLSearch => ({
-    book: typeof search.book === "string" ? search.book : undefined,
+    book: typeof search['book'] === "string" ? (search['book'] as string) : undefined,
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(booksQuery),
   head: () => ({

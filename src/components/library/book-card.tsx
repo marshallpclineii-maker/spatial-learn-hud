@@ -20,7 +20,7 @@ export function BookCard({ book }: { book: BookSummary }) {
       <div
         className={cn(
           "relative flex h-40 items-end bg-gradient-to-br p-4",
-          ACCENTS[m.coverAccent] ?? ACCENTS.slate,
+          ACCENTS[m.coverAccent] ?? ACCENTS['slate'],
         )}
       >
         <div className="absolute top-3 right-3 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">

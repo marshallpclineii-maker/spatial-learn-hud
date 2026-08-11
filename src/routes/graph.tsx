@@ -11,7 +11,7 @@ interface GraphSearch {
 
 export const Route = createFileRoute("/graph")({
   validateSearch: (search: Record<string, unknown>): GraphSearch => ({
-    node: typeof search.node === "string" ? search.node : undefined,
+    node: typeof search['node'] === "string" ? (search['node'] as string) : undefined,
   }),
   head: () => ({
     meta: [
