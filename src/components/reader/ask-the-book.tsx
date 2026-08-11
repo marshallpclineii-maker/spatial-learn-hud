@@ -123,7 +123,7 @@ export function AskTheBook({
         </span>
       </div>
 
-      <div ref={listRef} className="mt-3 min-h-32 flex-1 space-y-3 overflow-y-auto pr-1">
+      <div ref={listRef} className="mt-3 max-h-80 min-h-24 space-y-3 overflow-y-auto pr-1">
         {messages.length === 0 && (
           <p className="text-xs text-muted-foreground">
             Questions are answered with the current chapter, timestamp, transcript and selected entity as context.
