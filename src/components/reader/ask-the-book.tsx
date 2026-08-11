@@ -114,7 +114,7 @@ export function AskTheBook({
     .slice(0, 3);
 
   return (
-    <div className="glass flex h-full flex-col rounded-xl p-4">
+    <div className="glass flex flex-col rounded-xl p-4">
       <div className="flex items-center gap-2">
         <Sparkles className="size-4 text-primary" />
         <h3 className="text-sm font-semibold">Ask the Book</h3>
