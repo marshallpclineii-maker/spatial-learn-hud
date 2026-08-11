@@ -3,13 +3,13 @@ import { z } from "zod";
 
 const AskInput = z.object({
   question: z.string().min(1).max(500),
-  bookTitle: z.string(),
-  author: z.string(),
-  chapterTitle: z.string(),
-  timestamp: z.string(),
-  transcriptWindow: z.string(),
-  selectedEntity: z.string().nullable(),
-  relationships: z.array(z.string()),
+  bookTitle: z.string().max(200),
+  author: z.string().max(200),
+  chapterTitle: z.string().max(200),
+  timestamp: z.string().max(20),
+  transcriptWindow: z.string().max(2000),
+  selectedEntity: z.string().max(200).nullable(),
+  relationships: z.array(z.string().max(200)).max(20),
 });
 
 export type AskTheBookResult =
