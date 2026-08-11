@@ -75,6 +75,20 @@ export function KnowledgeGraphCanvas({
         p.vy *= 0.55;
       }
     }
+    // Normalise: centre the layout and scale it into a viewport-safe box so
+    // node labels never fall outside the canvas on first paint.
+    const xs = nodes.map((n) => pts[n.id]!.x);
+    const ys = nodes.map((n) => pts[n.id]!.y);
+    const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+    const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    const spanX = Math.max(1, Math.max(...xs) - Math.min(...xs));
+    const spanY = Math.max(1, Math.max(...ys) - Math.min(...ys));
+    const scale = Math.min(520 / spanX, 300 / spanY, 1.6);
+    for (const n of nodes) {
+      const p = pts[n.id]!;
+      p.x = (p.x - cx) * scale;
+      p.y = (p.y - cy) * scale;
+    }
     return pts;
   }, [graph]);
 
