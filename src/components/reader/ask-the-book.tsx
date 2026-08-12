@@ -20,6 +20,8 @@ interface Props {
   atSeconds: number;
   chapterId: string;
   transcriptWindow: string;
+  currentSentence?: string;
+  activeEntities?: string[];
   selectedEntity: Entity | null;
   pendingQuestion: string | null;
   onConsumedQuestion: () => void;
@@ -31,6 +33,8 @@ export function AskTheBook({
   atSeconds,
   chapterId,
   transcriptWindow,
+  currentSentence = "",
+  activeEntities = [],
   selectedEntity,
   pendingQuestion,
   onConsumedQuestion,
@@ -41,8 +45,8 @@ export function AskTheBook({
   const [busy, setBusy] = useState(false);
   const askAi = useServerFn(askTheBookAi);
   const listRef = useRef<HTMLDivElement>(null);
-  const stateRef = useRef({ atSeconds, chapterId, transcriptWindow, selectedEntity });
-  stateRef.current = { atSeconds, chapterId, transcriptWindow, selectedEntity };
+  const stateRef = useRef({ atSeconds, chapterId, transcriptWindow, selectedEntity, currentSentence, activeEntities });
+  stateRef.current = { atSeconds, chapterId, transcriptWindow, selectedEntity, currentSentence, activeEntities };
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -83,6 +87,8 @@ export function AskTheBook({
           chapterTitle: chapter?.title ?? "",
           timestamp: formatTime(ctx.atSeconds),
           transcriptWindow: ctx.transcriptWindow,
+          currentSentence: ctx.currentSentence,
+          activeEntities: ctx.activeEntities.slice(0, 12),
           selectedEntity: ctx.selectedEntity?.name ?? null,
           relationships: book.knowledgeGraph.edges.slice(0, 20).map((e) => {
             const s = book.knowledgeGraph.nodes.find((n) => n.id === e.source)?.label ?? e.source;
