@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense, lazy, useState } from "react";
 import { Glasses, MonitorSmartphone } from "lucide-react";
-import { demoProvider } from "@/providers/demo-provider";
+import { listAllBooks } from "@/providers/registry";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useWebXrSupport } from "@/xr/use-webxr-support";
 
@@ -13,8 +13,8 @@ interface VLSearch {
 }
 
 const booksQuery = queryOptions({
-  queryKey: ["books", demoProvider.id],
-  queryFn: () => demoProvider.listBooks(),
+  queryKey: ["books", "all"],
+  queryFn: () => listAllBooks(),
 });
 
 export const Route = createFileRoute("/virtual-library")({
