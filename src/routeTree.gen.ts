@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as ReaderRouteImport } from './routes/reader'
+import { Route as SpatialReaderRouteImport } from './routes/spatial-reader'
 import { Route as VirtualLibraryRouteImport } from './routes/virtual-library'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const ReaderRoute = ReaderRouteImport.update({
   path: '/reader',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SpatialReaderRoute = SpatialReaderRouteImport.update({
+  id: '/spatial-reader',
+  path: '/spatial-reader',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VirtualLibraryRoute = VirtualLibraryRouteImport.update({
   id: '/virtual-library',
   path: '/virtual-library',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/graph': typeof GraphRoute
   '/library': typeof LibraryRoute
   '/reader': typeof ReaderRoute
+  '/spatial-reader': typeof SpatialReaderRoute
   '/virtual-library': typeof VirtualLibraryRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/graph': typeof GraphRoute
   '/library': typeof LibraryRoute
   '/reader': typeof ReaderRoute
+  '/spatial-reader': typeof SpatialReaderRoute
   '/virtual-library': typeof VirtualLibraryRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,34 @@ export interface FileRoutesById {
   '/graph': typeof GraphRoute
   '/library': typeof LibraryRoute
   '/reader': typeof ReaderRoute
+  '/spatial-reader': typeof SpatialReaderRoute
   '/virtual-library': typeof VirtualLibraryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/graph' | '/library' | '/reader' | '/virtual-library'
+  fullPaths:
+    | '/'
+    | '/graph'
+    | '/library'
+    | '/reader'
+    | '/spatial-reader'
+    | '/virtual-library'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/graph' | '/library' | '/reader' | '/virtual-library'
-  id: '__root__' | '/' | '/graph' | '/library' | '/reader' | '/virtual-library'
+  to:
+    | '/'
+    | '/graph'
+    | '/library'
+    | '/reader'
+    | '/spatial-reader'
+    | '/virtual-library'
+  id:
+    | '__root__'
+    | '/'
+    | '/graph'
+    | '/library'
+    | '/reader'
+    | '/spatial-reader'
+    | '/virtual-library'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +104,7 @@ export interface RootRouteChildren {
   GraphRoute: typeof GraphRoute
   LibraryRoute: typeof LibraryRoute
   ReaderRoute: typeof ReaderRoute
+  SpatialReaderRoute: typeof SpatialReaderRoute
   VirtualLibraryRoute: typeof VirtualLibraryRoute
 }
 
@@ -109,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReaderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/spatial-reader': {
+      id: '/spatial-reader'
+      path: '/spatial-reader'
+      fullPath: '/spatial-reader'
+      preLoaderRoute: typeof SpatialReaderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/virtual-library': {
       id: '/virtual-library'
       path: '/virtual-library'
@@ -124,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   GraphRoute: GraphRoute,
   LibraryRoute: LibraryRoute,
   ReaderRoute: ReaderRoute,
+  SpatialReaderRoute: SpatialReaderRoute,
   VirtualLibraryRoute: VirtualLibraryRoute,
 }
 export const routeTree = rootRouteImport
