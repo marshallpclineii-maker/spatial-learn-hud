@@ -27,9 +27,11 @@ export type ExternalLinks = Record<string, string | null>;
  * infer origin from ids or provider names.
  *  - "demo"      — bundled public-domain proof-of-concept content.
  *  - "personal"  — imported by the listener, stored on their device.
+ *  - "companion" — a title the listener declared they own on a provider whose
+ *                  audio stays in that provider's own app (e.g. Audible).
  *  - "connected" — returned by a genuinely authorized provider integration.
  */
-export type BookOrigin = "demo" | "personal" | "connected";
+export type BookOrigin = "demo" | "personal" | "companion" | "connected";
 
 export interface BookMetadata {
   id: string;
