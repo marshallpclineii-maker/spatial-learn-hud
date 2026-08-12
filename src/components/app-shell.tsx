@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Library, Boxes, Headphones, Network, RotateCcw } from "lucide-react";
+import { Library, Boxes, Headphones, Network, Plug, RotateCcw, ScrollText } from "lucide-react";
 import type { ReactNode } from "react";
 import { useDemoSession } from "@/state/demo-session";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,8 @@ const NAV = [
   { to: "/virtual-library", label: "Virtual Library", icon: Boxes },
   { to: "/reader", label: "Active Reader", icon: Headphones },
   { to: "/graph", label: "Knowledge Graph", icon: Network },
+  { to: "/connect", label: "Providers", icon: Plug },
+  { to: "/architecture", label: "Status", icon: ScrollText },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
