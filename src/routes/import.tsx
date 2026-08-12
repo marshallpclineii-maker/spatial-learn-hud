@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { FileAudio, FileText, Loader2, Upload } from "lucide-react";
+import { FileAudio, FileText, Headphones, Loader2, Upload } from "lucide-react";
 import { buildImportedBook } from "@/personal/import-pipeline";
 import { putPersonalRecord } from "@/personal/personal-store";
 
@@ -46,6 +46,10 @@ async function readDuration(file: File): Promise<number> {
 function ImportPage() {
   const navigate = useNavigate();
   const audioRef = useRef<HTMLInputElement>(null);
+  const search = Route.useSearch();
+  const [mode, setMode] = useState<"local-audio" | "companion">(
+    search.mode === "companion" ? "companion" : "local-audio",
+  );
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [narrator, setNarrator] = useState("");
@@ -62,6 +66,8 @@ function ImportPage() {
     setAudioDuration(file ? await readDuration(file) : 0);
   };
 
+  const usingAudio = mode === "local-audio" && Boolean(audioFile);
+
   const onTranscriptFile = async (file: File | null) => {
     if (!file) return;
     setTranscript(await file.text());
@@ -73,9 +79,13 @@ function ImportPage() {
       setError("A title and author are required.");
       return;
     }
-    const duration = audioDuration || Number(manualMinutes) * 60;
+    const duration = usingAudio ? audioDuration : Number(manualMinutes) * 60;
     if (!duration) {
-      setError("Add an audio file, or enter the running time in minutes so the timeline can be built.");
+      setError(
+        mode === "local-audio"
+          ? "Choose a DRM-free audio file you own, or switch to companion mode."
+          : "Enter the running time in minutes so the companion timeline can be built.",
+      );
       return;
     }
     setBusy(true);
@@ -87,14 +97,14 @@ function ImportPage() {
         ...(audibleUrl.trim() ? { audibleUrl: audibleUrl.trim() } : {}),
         durationSeconds: duration,
         ...(transcript.trim() ? { transcriptText: transcript } : {}),
-        hasAudioFile: Boolean(audioFile),
+        hasAudioFile: usingAudio,
       });
       await putPersonalRecord({
         id: book.metadata.id,
         book,
-        mode: audioFile ? "local-audio" : "companion-timeline",
-        audioBlob: audioFile ?? undefined,
-        audioFileName: audioFile?.name ?? undefined,
+        mode: usingAudio ? "local-audio" : "companion-timeline",
+        audioBlob: usingAudio ? (audioFile ?? undefined) : undefined,
+        audioFileName: usingAudio ? (audioFile?.name ?? undefined) : undefined,
         createdAt: Date.now(),
       });
       void navigate({ to: "/reader", search: { book: book.metadata.id, t: 0 } });
