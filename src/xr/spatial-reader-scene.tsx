@@ -32,7 +32,7 @@ export default function SpatialReaderScene({
   const markers = attention.filter((a) => a.level <= 2).slice(0, 5);
 
   return (
-    <Canvas camera={{ position: [0, 1.4, 4.2], fov: 52 }}>
+    <Canvas camera={{ position: [0, 1.1, 5.2], fov: 50 }}>
       <XR store={store}>
         <color attach="background" args={["#080d14"]} />
         <fog attach="fog" args={["#080d14", 6, 18]} />
@@ -56,7 +56,7 @@ export default function SpatialReaderScene({
               <Text
                 key={s.id}
                 position={[col, 0.72 - row * 0.72, 0.02]}
-                maxWidth={1.75}
+                maxWidth={1.7}
                 fontSize={0.082}
                 lineHeight={1.35}
                 anchorY="top"
@@ -97,11 +97,17 @@ export default function SpatialReaderScene({
           );
         })}
 
-        <Text position={[0, -0.35, 0]} fontSize={0.1} color="#4d6274">
+        <Text position={[0, -0.28, 0]} fontSize={0.1} color="#4d6274">
           {`${book.metadata.title} · ${Math.floor(currentTime)}s`}
         </Text>
 
-        <OrbitControls enablePan={false} maxPolarAngle={Math.PI / 1.9} minDistance={2.4} maxDistance={9} />
+        <OrbitControls
+          enablePan={false}
+          target={[0, 1.05, 0]}
+          maxPolarAngle={Math.PI / 1.9}
+          minDistance={2.4}
+          maxDistance={9}
+        />
       </XR>
     </Canvas>
   );
