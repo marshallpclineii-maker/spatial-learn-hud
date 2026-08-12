@@ -142,6 +142,8 @@ function ReaderContent() {
         mode={engine.mode}
         notice={engine.notice}
         chapter={chapter}
+        timelineMode={engine.timelineMode}
+        onNudge={engine.nudge}
         onToggle={engine.toggle}
         onSeek={engine.seek}
         onSpeed={engine.setSpeed}
