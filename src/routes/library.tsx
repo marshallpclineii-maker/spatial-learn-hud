@@ -92,6 +92,7 @@ function LibraryContent() {
       <header>
         <h1 className="text-2xl font-bold tracking-tight">My Library</h1>
         <p className="text-sm text-muted-foreground">
+          {books.filter((b) => b.origin === "companion").length} Audible (companion) ·{" "}
           {books.filter((b) => b.origin === "personal").length} personal ·{" "}
           {books.filter((b) => b.origin === "connected").length} connected provider ·{" "}
           {books.filter((b) => b.origin === "demo").length} demo titles. Sources are never mixed silently.
