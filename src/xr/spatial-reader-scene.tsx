@@ -41,22 +41,22 @@ export default function SpatialReaderScene({
 
         {/* Virtual pages */}
         <group position={[0, 1.1, 0]}>
-          {[-1.05, 1.05].map((x) => (
-            <mesh key={x} position={[x, 0, -0.02]} rotation={[0, x < 0 ? 0.09 : -0.09, 0]}>
-              <planeGeometry args={[2, 2.4]} />
+          {[-1.2, 1.2].map((x) => (
+            <mesh key={x} position={[x, 0, -0.02]} rotation={[0, x < 0 ? 0.05 : -0.05, 0]}>
+              <planeGeometry args={[2.3, 2.4]} />
               <meshStandardMaterial color="#121a26" emissive="#0d1620" emissiveIntensity={0.6} />
             </mesh>
           ))}
 
           {window.map((s, i) => {
             const active = segment?.id === s.id;
-            const col = i < 3 ? -1.05 : 1.05;
+            const col = i < 3 ? -1.2 : 1.2;
             const row = i % 3;
             return (
               <Text
                 key={s.id}
                 position={[col, 0.72 - row * 0.72, 0.14]}
-                maxWidth={1.7}
+                maxWidth={1.9}
                 fontSize={0.082}
                 lineHeight={1.35}
                 anchorY="top"
