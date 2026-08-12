@@ -1,5 +1,5 @@
-import type { BookSummary, UniversalBookObject } from "@/domain/types";
-import type { AudiobookProvider } from "./audiobook-provider";
+import type { BookOrigin, BookSummary, UniversalBookObject } from "@/domain/types";
+import type { AudiobookProvider, ProviderCapabilities } from "./audiobook-provider";
 import { audioUrlFor, getPersonalRecord, listPersonalRecords } from "@/personal/personal-store";
 
 /**
@@ -11,17 +11,37 @@ import { audioUrlFor, getPersonalRecord, listPersonalRecords } from "@/personal/
 export class UserImportProvider implements AudiobookProvider {
   readonly id = "personal";
   readonly label = "My imports";
+  readonly origin: BookOrigin = "personal";
+  readonly capabilities: ProviderCapabilities = {
+    libraryMetadata: true,
+    chapters: true,
+    playbackPosition: true,
+    authorizedPlayback: true,
+    transcript: true,
+  };
 
   async listBooks(): Promise<BookSummary[]> {
     const records = await listPersonalRecords();
-    return records.map((r) => ({ metadata: r.book.metadata, hasFullExperience: true }));
+    return records.map((r) => ({
+      metadata: r.book.metadata,
+      hasFullExperience: true,
+      origin: this.origin,
+      providerId: this.id,
+    }));
   }
 
   async getBook(bookId: string): Promise<UniversalBookObject | null> {
     const record = await getPersonalRecord(bookId);
     if (!record) return null;
     const src = audioUrlFor(record.id, record.audioBlob);
-    return { ...record.book, audio: { ...record.book.audio, src } };
+    return {
+      ...record.book,
+      audio: {
+        ...record.book.audio,
+        src,
+        timelineMode: src ? "local" : (record.book.audio.timelineMode ?? "companion"),
+      },
+    };
   }
 }
 
