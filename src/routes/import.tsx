@@ -5,6 +5,10 @@ import { buildImportedBook } from "@/personal/import-pipeline";
 import { putPersonalRecord } from "@/personal/personal-store";
 
 export const Route = createFileRoute("/import")({
+  validateSearch: (search: Record<string, unknown>): { mode?: "local-audio" | "companion" } =>
+    search['mode'] === "companion" || search['mode'] === "local-audio"
+      ? { mode: search['mode'] }
+      : {},
   head: () => ({
     meta: [
       { title: "Add a Personal Audiobook — Spatial Knowledge Library" },
@@ -157,10 +161,34 @@ function ImportPage() {
 
       <section className="glass space-y-3 rounded-xl p-4">
         <h2 className="text-sm font-semibold">2 · The audio timeline</h2>
-        <p className="text-xs text-muted-foreground">
-          A DRM-free file you own (M4B, MP3, M4A) becomes the authoritative clock. DRM-protected provider downloads
-          cannot be played here — for those, use companion timeline mode below.
-        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <button
+            onClick={() => setMode("local-audio")}
+            className={`flex items-start gap-2 rounded-lg border p-3 text-left text-xs ${
+              mode === "local-audio" ? "border-primary/60 bg-primary/10" : "border-border hover:bg-secondary"
+            }`}
+          >
+            <FileAudio className="mt-0.5 size-4 shrink-0 text-primary" />
+            <span>
+              <span className="block text-sm font-semibold">I have the audio file</span>
+              A DRM-free file you own (M4B, MP3, M4A) becomes the authoritative clock in this app.
+            </span>
+          </button>
+          <button
+            onClick={() => setMode("companion")}
+            className={`flex items-start gap-2 rounded-lg border p-3 text-left text-xs ${
+              mode === "companion" ? "border-accent/60 bg-accent/10" : "border-border hover:bg-secondary"
+            }`}
+          >
+            <Headphones className="mt-0.5 size-4 shrink-0 text-accent" />
+            <span>
+              <span className="block text-sm font-semibold">Audio plays in Audible (companion)</span>
+              DRM-protected titles stay in the provider's own app; this app runs a clock you keep in sync and delivers
+              the knowledge layer alongside it.
+            </span>
+          </button>
+        </div>
+        {mode === "local-audio" ? (
         <div className="flex flex-wrap items-center gap-3">
           <input
             ref={audioRef}
@@ -178,10 +206,10 @@ function ImportPage() {
           <span className="text-xs text-muted-foreground">
             {audioFile
               ? `${audioFile.name} · ${Math.round(audioDuration / 60)} min`
-              : "No file — companion timeline mode"}
+              : "No file chosen yet"}
           </span>
         </div>
-        {!audioFile && (
+        ) : (
           <label className="block space-y-1 text-xs text-muted-foreground">
             Running time in minutes (companion mode)
             <input
