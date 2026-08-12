@@ -12,6 +12,9 @@ export interface AudioEngineState {
   notice: string | null;
 }
 
+/** Which clock the rest of the pipeline is synchronized to. */
+export type TimelineAuthority = "audio-element" | "speech-clock" | "simulated-clock";
+
 /**
  * Shared timestamp clock for player + transcript.
  * Narration is produced by the browser's speech engine from the public-domain
@@ -31,9 +34,16 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
   const rafRef = useRef<number | null>(null);
   const lastTickRef = useRef<number>(0);
   const spokenSegmentRef = useRef<string | null>(null);
+  const audioElRef = useRef<HTMLAudioElement | null>(null);
+  const hasFile = Boolean(book?.audio.src);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // A real audio stream always wins: it becomes the authoritative timeline.
+    if (hasFile) {
+      setMode("file");
+      return;
+    }
     if ("speechSynthesis" in window) {
       setMode("speech");
       const check = () => setVoiceReady(window.speechSynthesis.getVoices().length > 0);
@@ -44,7 +54,33 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
     setMode("clock");
     setNotice("No speech engine on this device — following the silent timeline.");
     return;
-  }, []);
+  }, [hasFile]);
+
+  // Real audio element — created only when the book ships an actual stream.
+  useEffect(() => {
+    const src = book?.audio.src;
+    if (typeof window === "undefined" || !src) return;
+    const el = new Audio(src);
+    el.preload = "metadata";
+    el.currentTime = timeRef.current;
+    audioElRef.current = el;
+    const onTime = () => {
+      timeRef.current = el.currentTime;
+      setCurrentTime(el.currentTime);
+    };
+    const onEnd = () => setIsPlaying(false);
+    const onError = () => setNotice("The audio stream could not be played on this device.");
+    el.addEventListener("timeupdate", onTime);
+    el.addEventListener("ended", onEnd);
+    el.addEventListener("error", onError);
+    return () => {
+      el.pause();
+      el.removeEventListener("timeupdate", onTime);
+      el.removeEventListener("ended", onEnd);
+      el.removeEventListener("error", onError);
+      audioElRef.current = null;
+    };
+  }, [book?.audio.src]);
 
   const stopSpeech = useCallback(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -69,7 +105,8 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
 
   // Clock loop — the single source of truth for every synced surface.
   useEffect(() => {
-    if (!isPlaying || !book) return;
+    // Skipped entirely when a real audio element owns the timeline.
+    if (!isPlaying || !book || mode === "file") return;
     lastTickRef.current = performance.now();
     const tick = (now: number) => {
       const delta = ((now - lastTickRef.current) / 1000) * speed;
@@ -90,7 +127,7 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [isPlaying, speed, duration, book, stopSpeech]);
+  }, [isPlaying, speed, duration, book, stopSpeech, mode]);
 
   // Narrate whichever segment the clock is inside.
   useEffect(() => {
@@ -109,13 +146,19 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
     if (timeRef.current >= duration) {
       timeRef.current = 0;
       setCurrentTime(0);
+      if (audioElRef.current) audioElRef.current.currentTime = 0;
     }
     spokenSegmentRef.current = null;
+    if (audioElRef.current) {
+      audioElRef.current.playbackRate = speed;
+      void audioElRef.current.play().catch(() => setNotice("Playback needs a direct tap on this device."));
+    }
     setIsPlaying(true);
-  }, [book, duration]);
+  }, [book, duration, speed]);
 
   const pause = useCallback(() => {
     setIsPlaying(false);
+    audioElRef.current?.pause();
     stopSpeech();
   }, [stopSpeech]);
 
@@ -126,6 +169,7 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
       const clamped = Math.min(Math.max(0, seconds), duration);
       timeRef.current = clamped;
       setCurrentTime(clamped);
+      if (audioElRef.current) audioElRef.current.currentTime = clamped;
       stopSpeech();
     },
     [duration, stopSpeech],
@@ -135,6 +179,7 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
     (next: number) => {
       setSpeed(next);
       spokenSegmentRef.current = null;
+      if (audioElRef.current) audioElRef.current.playbackRate = next;
       stopSpeech();
     },
     [stopSpeech],
@@ -143,5 +188,7 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
   useEffect(() => () => stopSpeech(), [stopSpeech]);
 
   const state: AudioEngineState = { currentTime, isPlaying, speed, mode, voiceReady, notice };
-  return { ...state, duration, play, pause, toggle, seek, setSpeed: changeSpeed };
+  const authority: TimelineAuthority =
+    mode === "file" ? "audio-element" : mode === "speech" ? "speech-clock" : "simulated-clock";
+  return { ...state, authority, duration, play, pause, toggle, seek, setSpeed: changeSpeed };
 }
