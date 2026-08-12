@@ -118,13 +118,6 @@ function ReaderContent() {
             Spatial mode
           </Link>
           <Link
-      <p className="font-mono text-[10px] text-muted-foreground">
-        timeline authority: {engine.authority.replace("-", " ")} ·{" "}
-        {engine.authority === "audio-element"
-          ? "driven by the real audio stream"
-          : "demo fallback — a real stream takes over automatically when a provider supplies one"}
-      </p>
-
             to="/graph"
             search={{ node: undefined }}
             className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-secondary"
@@ -133,6 +126,13 @@ function ReaderContent() {
           </Link>
         </div>
       </header>
+
+      <p className="font-mono text-[10px] text-muted-foreground">
+        timeline authority: {engine.authority.replace("-", " ")} ·{" "}
+        {engine.authority === "audio-element"
+          ? "driven by the real audio stream"
+          : "demo fallback — a real stream takes over automatically when a provider supplies one"}
+      </p>
 
       <PlayerBar
         currentTime={engine.currentTime}
