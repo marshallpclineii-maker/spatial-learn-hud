@@ -280,7 +280,7 @@ export function buildImportedBook(input: ImportInput): UniversalBookObject {
     audio: {
       src: null,
       durationSeconds: duration,
-      timelineMode: (input.hasAudioFile ? "local" : "companion") as const,
+      timelineMode: input.hasAudioFile ? ("local" as const) : ("companion" as const),
       attribution: input.hasAudioFile
         ? "Local file supplied by the listener; never uploaded."
         : "No audio in this app — the provider's own app remains the player.",
