@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense, useMemo, useState } from "react";
-import { Plus, Search } from "lucide-react";
+import { Headphones, Plus, Search } from "lucide-react";
 import { BookCard } from "@/components/library/book-card";
 import { ORIGIN_LABEL, listAllBooks, type BookOrigin, type LibraryEntry } from "@/providers/registry";
 import { cn } from "@/lib/utils";
