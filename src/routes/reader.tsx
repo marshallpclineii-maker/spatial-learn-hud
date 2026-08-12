@@ -63,7 +63,7 @@ function ReaderPage() {
 function ReaderContent() {
   const { book: bookId, t, view } = Route.useSearch();
   const { data: book } = useSuspenseQuery(bookQuery(bookId));
-  const { startDemo } = useDemoSession();
+  const { startDemo, record } = useDemoSession();
 
   const reader = useReaderState(book, t);
   const engine = reader.audio;
@@ -186,7 +186,7 @@ function ReaderContent() {
               book={book}
               chapterId={chapter?.id ?? book.chapters[0]!.id}
             atLabel={formatTime(engine.currentTime)}
-              onClose={() => setSelectedEntityId(null)}
+            onClose={reader.clearEntity}
               onAsk={(q) => setPendingQuestion(q)}
               onRelated={selectEntity}
             />
