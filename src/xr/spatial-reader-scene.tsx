@@ -44,7 +44,7 @@ export default function SpatialReaderScene({
           {[-1.2, 1.2].map((x) => (
             <mesh key={x} position={[x, 0, -0.02]} rotation={[0, x < 0 ? 0.05 : -0.05, 0]}>
               <planeGeometry args={[2.3, 2.4]} />
-              <meshStandardMaterial color="#ff0000" emissive="#0d1620" emissiveIntensity={0.6} />
+              <meshStandardMaterial color="#121a26" emissive="#0d1620" emissiveIntensity={0.6} />
             </mesh>
           ))}
 
@@ -74,7 +74,7 @@ export default function SpatialReaderScene({
         {markers.map((m, i) => {
           const angle = -0.9 + i * 0.45;
           return (
-            <group key={m.entity.id} position={[Math.sin(angle) * 3.1, 1.9 - i * 0.28, Math.cos(angle) * -1.2]}>
+            <group key={m.entity.id} position={[Math.sin(angle) * 3.7, 1.9 - i * 0.28, Math.cos(angle) * -1.2]}>
               <mesh onClick={() => onSelectEntity(m.entity.id)}>
                 <icosahedronGeometry args={[m.level === 1 ? 0.11 : 0.075, 1]} />
                 <meshStandardMaterial
