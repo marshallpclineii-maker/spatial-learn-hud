@@ -22,6 +22,15 @@ export type AttentionLevel = 1 | 2 | 3;
  */
 export type ExternalLinks = Record<string, string | null>;
 
+/**
+ * Where a title came from. Kept in the domain model so no surface has to
+ * infer origin from ids or provider names.
+ *  - "demo"      — bundled public-domain proof-of-concept content.
+ *  - "personal"  — imported by the listener, stored on their device.
+ *  - "connected" — returned by a genuinely authorized provider integration.
+ */
+export type BookOrigin = "demo" | "personal" | "connected";
+
 export interface BookMetadata {
   id: string;
   title: string;
