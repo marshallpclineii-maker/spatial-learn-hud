@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/library", label: "My Library", icon: Library },
+  { to: "/audible", label: "Audible", icon: Headphones },
   { to: "/import", label: "Add Book", icon: Plus },
   { to: "/virtual-library", label: "Virtual Library", icon: Boxes },
   { to: "/reader", label: "Active Reader", icon: Headphones },

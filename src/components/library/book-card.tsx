@@ -45,7 +45,9 @@ export function BookCard({ book, origin }: { book: BookSummary; origin?: BookOri
               "rounded-full border px-2 py-0.5",
               shownOrigin === "personal"
                 ? "border-primary/50 bg-primary/10 text-primary"
-                : "border-dashed border-border text-muted-foreground",
+                : shownOrigin === "companion"
+                  ? "border-accent/50 bg-accent/10 text-accent"
+                  : "border-dashed border-border text-muted-foreground",
             )}
           >
             {shownOrigin}
@@ -137,7 +139,7 @@ export function BookCard({ book, origin }: { book: BookSummary; origin?: BookOri
             </button>
           )}
 
-          {shownOrigin === "personal" && (
+          {(shownOrigin === "personal" || shownOrigin === "companion") && (
             <button
               onClick={() => {
                 void deletePersonalRecord(m.id).then(() =>

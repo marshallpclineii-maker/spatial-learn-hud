@@ -19,6 +19,12 @@ export interface PersonalRecord {
   /** Book object as stored — audio.src is always null on disk. */
   book: UniversalBookObject;
   mode: PersonalMode;
+  /**
+   * Which shelf this record belongs to. "personal" (default) for imported
+   * files; "audible" for titles the listener declared from their Audible
+   * library and plays in Audible's own app.
+   */
+  shelf?: "personal" | "audible" | undefined;
   audioBlob?: Blob | undefined;
   audioFileName?: string | undefined;
   createdAt: number;

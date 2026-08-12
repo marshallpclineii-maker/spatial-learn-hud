@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
+import { Route as AudibleRouteImport } from './routes/audible'
 import { Route as ConnectRouteImport } from './routes/connect'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ImportRouteImport } from './routes/import'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const ArchitectureRoute = ArchitectureRouteImport.update({
   id: '/architecture',
   path: '/architecture',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AudibleRoute = AudibleRouteImport.update({
+  id: '/audible',
+  path: '/audible',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConnectRoute = ConnectRouteImport.update({
@@ -68,6 +74,7 @@ const VirtualLibraryRoute = VirtualLibraryRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/architecture': typeof ArchitectureRoute
+  '/audible': typeof AudibleRoute
   '/connect': typeof ConnectRoute
   '/graph': typeof GraphRoute
   '/import': typeof ImportRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/architecture': typeof ArchitectureRoute
+  '/audible': typeof AudibleRoute
   '/connect': typeof ConnectRoute
   '/graph': typeof GraphRoute
   '/import': typeof ImportRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/architecture': typeof ArchitectureRoute
+  '/audible': typeof AudibleRoute
   '/connect': typeof ConnectRoute
   '/graph': typeof GraphRoute
   '/import': typeof ImportRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/architecture'
+    | '/audible'
     | '/connect'
     | '/graph'
     | '/import'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/architecture'
+    | '/audible'
     | '/connect'
     | '/graph'
     | '/import'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/architecture'
+    | '/audible'
     | '/connect'
     | '/graph'
     | '/import'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArchitectureRoute: typeof ArchitectureRoute
+  AudibleRoute: typeof AudibleRoute
   ConnectRoute: typeof ConnectRoute
   GraphRoute: typeof GraphRoute
   ImportRoute: typeof ImportRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/architecture'
       fullPath: '/architecture'
       preLoaderRoute: typeof ArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audible': {
+      id: '/audible'
+      path: '/audible'
+      fullPath: '/audible'
+      preLoaderRoute: typeof AudibleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/connect': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchitectureRoute: ArchitectureRoute,
+  AudibleRoute: AudibleRoute,
   ConnectRoute: ConnectRoute,
   GraphRoute: GraphRoute,
   ImportRoute: ImportRoute,

@@ -22,7 +22,9 @@ export class UserImportProvider implements AudiobookProvider {
 
   async listBooks(): Promise<BookSummary[]> {
     const records = await listPersonalRecords();
-    return records.map((r) => ({
+    return records
+      .filter((r) => (r.shelf ?? "personal") === "personal")
+      .map((r) => ({
       metadata: r.book.metadata,
       hasFullExperience: true,
       origin: this.origin,
@@ -32,7 +34,7 @@ export class UserImportProvider implements AudiobookProvider {
 
   async getBook(bookId: string): Promise<UniversalBookObject | null> {
     const record = await getPersonalRecord(bookId);
-    if (!record) return null;
+    if (!record || (record.shelf ?? "personal") !== "personal") return null;
     const src = audioUrlFor(record.id, record.audioBlob);
     return {
       ...record.book,

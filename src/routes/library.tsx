@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense, useMemo, useState } from "react";
-import { Plus, Search } from "lucide-react";
+import { Headphones, Plus, Search } from "lucide-react";
 import { BookCard } from "@/components/library/book-card";
 import { ORIGIN_LABEL, listAllBooks, type BookOrigin, type LibraryEntry } from "@/providers/registry";
 import { cn } from "@/lib/utils";
@@ -36,10 +36,12 @@ export const Route = createFileRoute("/library")({
 const THEMES = ["All", "Personal", "Artificial Intelligence", "Philosophy", "Science"] as const;
 type Sort = "title" | "author" | "duration";
 
-const ORIGIN_ORDER: BookOrigin[] = ["personal", "connected", "demo"];
+const ORIGIN_ORDER: BookOrigin[] = ["companion", "personal", "connected", "demo"];
 
 const ORIGIN_NOTE: Record<BookOrigin, string> = {
   personal: "Imported by you and stored only on this device.",
+  companion:
+    "Titles you told this app you own on Audible. Audible plays the audio; this app runs the knowledge layer alongside it.",
   connected: "Supplied by an authorized provider integration.",
   demo: "Public-domain development/test content shipped with the app.",
 };
@@ -90,18 +92,27 @@ function LibraryContent() {
       <header>
         <h1 className="text-2xl font-bold tracking-tight">My Library</h1>
         <p className="text-sm text-muted-foreground">
+          {books.filter((b) => b.origin === "companion").length} Audible (companion) ·{" "}
           {books.filter((b) => b.origin === "personal").length} personal ·{" "}
           {books.filter((b) => b.origin === "connected").length} connected provider ·{" "}
           {books.filter((b) => b.origin === "demo").length} demo titles. Sources are never mixed silently.
         </p>
       </header>
 
-      <Link
-        to="/import"
-        className="glass flex w-fit items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-primary"
-      >
-        <Plus className="size-4" /> Add one of my own audiobooks
-      </Link>
+      <div className="flex flex-wrap gap-3">
+        <Link
+          to="/audible"
+          className="glass flex w-fit items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-accent"
+        >
+          <Headphones className="size-4" /> Connect my Audible library
+        </Link>
+        <Link
+          to="/import"
+          className="glass flex w-fit items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-primary"
+        >
+          <Plus className="size-4" /> Add one of my own audiobooks
+        </Link>
+      </div>
 
       <div className="glass flex flex-wrap items-center gap-3 rounded-xl p-3">
         <div className="relative min-w-52 flex-1">
@@ -148,7 +159,16 @@ function LibraryContent() {
 
           {items.length === 0 ? (
             <div className="glass rounded-xl border-dashed p-5 text-sm text-muted-foreground">
-              {origin === "personal" ? (
+              {origin === "companion" ? (
+                <>
+                  Your Audible shelf is empty here.{" "}
+                  <Link to="/audible" className="text-accent underline">
+                    Connect my Audible library
+                  </Link>{" "}
+                  — add the titles you own in one paste, then listen in Audible while this app runs the knowledge
+                  layer, in 2D, on the 3D shelf and in VR.
+                </>
+              ) : origin === "personal" ? (
                 <>
                   No personal titles yet.{" "}
                   <Link to="/import" className="text-primary underline">

@@ -2,6 +2,7 @@ import type { BookOrigin, BookSummary, UniversalBookObject } from "@/domain/type
 import type { AudiobookProvider } from "./audiobook-provider";
 import { demoProvider } from "./demo-provider";
 import { userImportProvider } from "./user-import-provider";
+import { audibleCompanionProvider } from "./audible-companion-provider";
 
 /**
  * Provider registry. The UI asks the registry for books and never needs to
@@ -14,6 +15,7 @@ export type { BookOrigin };
 export const ORIGIN_LABEL: Record<BookOrigin, string> = {
   demo: "Demo content",
   personal: "Personal content",
+  companion: "My Audible library (companion)",
   connected: "Connected provider content",
 };
 
@@ -25,7 +27,7 @@ export type LibraryEntry = BookSummary;
  * origin "connected". A connected provider appears here only when a real
  * authorized adapter is implemented — never as a placeholder.
  */
-const registered: AudiobookProvider[] = [userImportProvider, demoProvider];
+const registered: AudiobookProvider[] = [audibleCompanionProvider, userImportProvider, demoProvider];
 
 export function registeredProviders(): AudiobookProvider[] {
   return registered;
