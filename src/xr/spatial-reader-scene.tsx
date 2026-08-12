@@ -44,7 +44,7 @@ export default function SpatialReaderScene({
           {[-1.2, 1.2].map((x) => (
             <mesh key={x} position={[x, 0, -0.02]} rotation={[0, x < 0 ? 0.05 : -0.05, 0]}>
               <planeGeometry args={[2.3, 2.4]} />
-              <meshStandardMaterial color="#121a26" emissive="#0d1620" emissiveIntensity={0.6} />
+              <meshStandardMaterial color="#ff0000" emissive="#0d1620" emissiveIntensity={0.6} />
             </mesh>
           ))}
 
