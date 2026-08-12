@@ -43,12 +43,12 @@ export function BookCard({ book, origin }: { book: BookSummary; origin?: BookOri
           <span
             className={cn(
               "rounded-full border px-2 py-0.5",
-              origin === "personal"
+              shownOrigin === "personal"
                 ? "border-primary/50 bg-primary/10 text-primary"
                 : "border-dashed border-border text-muted-foreground",
             )}
           >
-            {origin}
+            {shownOrigin}
           </span>
           <span className="text-muted-foreground">{hasFullExperience ? "full experience" : "catalog only"}</span>
         </div>
@@ -93,19 +93,19 @@ export function BookCard({ book, origin }: { book: BookSummary; origin?: BookOri
             </button>
           )}
 
-          {audible ? (
+          {primaryUrl ? (
             <a
-              href={audible}
+              href={primaryUrl}
               target="_blank"
               rel="noreferrer noopener"
               className="flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs transition-colors hover:bg-secondary"
             >
-              <ExternalLink className="size-3.5" /> Open in Audible
+              <ExternalLink className="size-3.5" /> {LINK_LABEL[primaryKey] ?? "Open externally"}
             </a>
           ) : (
             <button
               disabled
-              title="No valid Audible listing for this title"
+              title="No external listing recorded for this title"
               className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-md border border-dashed border-border px-3 py-2 text-xs text-muted-foreground opacity-60"
             >
               <ExternalLink className="size-3.5" /> Unavailable
@@ -137,7 +137,7 @@ export function BookCard({ book, origin }: { book: BookSummary; origin?: BookOri
             </button>
           )}
 
-          {origin === "personal" && (
+          {shownOrigin === "personal" && (
             <button
               onClick={() => {
                 void deletePersonalRecord(m.id).then(() =>

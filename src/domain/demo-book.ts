@@ -33,8 +33,8 @@ export const demoBook: UniversalBookObject = {
     themes: ["Artificial Intelligence", "Science"],
     license: "Public domain (source text, 1843)",
     externalLinks: {
-      audibleUrl: "https://www.audible.com/search?keywords=Ada+Lovelace",
-      sourceUrl: "https://en.wikisource.org/wiki/Scientific_Memoirs/3/Sketch_of_the_Analytical_Engine",
+      audible: "https://www.audible.com/search?keywords=Ada+Lovelace",
+      source: "https://en.wikisource.org/wiki/Scientific_Memoirs/3/Sketch_of_the_Analytical_Engine",
     },
     durationSeconds: 168,
   },
