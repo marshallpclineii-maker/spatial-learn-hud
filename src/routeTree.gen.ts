@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ArchitectureRouteImport } from './routes/architecture'
+import { Route as ConnectRouteImport } from './routes/connect'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as ReaderRouteImport } from './routes/reader'
@@ -19,6 +21,16 @@ import { Route as VirtualLibraryRouteImport } from './routes/virtual-library'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchitectureRoute = ArchitectureRouteImport.update({
+  id: '/architecture',
+  path: '/architecture',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnectRoute = ConnectRouteImport.update({
+  id: '/connect',
+  path: '/connect',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GraphRoute = GraphRouteImport.update({
@@ -49,6 +61,8 @@ const VirtualLibraryRoute = VirtualLibraryRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/architecture': typeof ArchitectureRoute
+  '/connect': typeof ConnectRoute
   '/graph': typeof GraphRoute
   '/library': typeof LibraryRoute
   '/reader': typeof ReaderRoute
@@ -57,6 +71,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/architecture': typeof ArchitectureRoute
+  '/connect': typeof ConnectRoute
   '/graph': typeof GraphRoute
   '/library': typeof LibraryRoute
   '/reader': typeof ReaderRoute
@@ -66,6 +82,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/architecture': typeof ArchitectureRoute
+  '/connect': typeof ConnectRoute
   '/graph': typeof GraphRoute
   '/library': typeof LibraryRoute
   '/reader': typeof ReaderRoute
@@ -76,6 +94,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/architecture'
+    | '/connect'
     | '/graph'
     | '/library'
     | '/reader'
@@ -84,6 +104,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/architecture'
+    | '/connect'
     | '/graph'
     | '/library'
     | '/reader'
@@ -92,6 +114,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/architecture'
+    | '/connect'
     | '/graph'
     | '/library'
     | '/reader'
@@ -101,6 +125,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ArchitectureRoute: typeof ArchitectureRoute
+  ConnectRoute: typeof ConnectRoute
   GraphRoute: typeof GraphRoute
   LibraryRoute: typeof LibraryRoute
   ReaderRoute: typeof ReaderRoute
@@ -115,6 +141,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/architecture': {
+      id: '/architecture'
+      path: '/architecture'
+      fullPath: '/architecture'
+      preLoaderRoute: typeof ArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connect': {
+      id: '/connect'
+      path: '/connect'
+      fullPath: '/connect'
+      preLoaderRoute: typeof ConnectRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/graph': {
@@ -157,6 +197,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ArchitectureRoute: ArchitectureRoute,
+  ConnectRoute: ConnectRoute,
   GraphRoute: GraphRoute,
   LibraryRoute: LibraryRoute,
   ReaderRoute: ReaderRoute,
