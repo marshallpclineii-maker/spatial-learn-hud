@@ -5,9 +5,8 @@ import { AttentionRail, KnowledgeCard } from "@/components/reader/knowledge-hud"
 import { AskTheBook } from "@/components/reader/ask-the-book";
 import { PlayerBar } from "@/components/reader/player-bar";
 import { TranscriptView } from "@/components/reader/transcript-view";
-import { AttentionEngine } from "@/engines/attention-engine";
-import { TranscriptEngine, formatTime } from "@/engines/transcript-engine";
-import { useAudioEngine } from "@/engines/use-audio-engine";
+import { formatTime } from "@/engines/transcript-engine";
+import { useReaderState } from "@/engines/use-reader-state";
 import { demoProvider } from "@/providers/demo-provider";
 import { useDemoSession } from "@/state/demo-session";
 import { cn } from "@/lib/utils";
@@ -64,48 +63,18 @@ function ReaderPage() {
 function ReaderContent() {
   const { book: bookId, t, view } = Route.useSearch();
   const { data: book } = useSuspenseQuery(bookQuery(bookId));
-  const { startDemo, recordPosition, record } = useDemoSession();
+  const { startDemo } = useDemoSession();
 
-  const engine = useAudioEngine(book, t);
-  const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
+  const reader = useReaderState(book, t);
+  const engine = reader.audio;
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
-  const lastChapterRef = useRef<string | null>(null);
 
-  const transcriptEngine = useMemo(() => (book ? new TranscriptEngine(book) : null), [book]);
-  const attentionEngine = useMemo(() => (book ? new AttentionEngine(book) : null), [book]);
-
-  const segment = transcriptEngine?.segmentAt(engine.currentTime) ?? null;
-  const chapter = transcriptEngine?.chapterAt(engine.currentTime) ?? null;
-  const attention = attentionEngine?.activeAt(engine.currentTime) ?? [];
-  const selectedEntity = selectedEntityId ? (attentionEngine?.byId(selectedEntityId) ?? null) : null;
-
-  const entityNames = useMemo(() => {
-    const map: Record<string, string> = {};
-    for (const e of attentionEngine?.allEntities() ?? []) map[e.id] = e.name;
-    return map;
-  }, [attentionEngine]);
+  const { segment, chapter, attention, selectedEntity, selectedEntityId, entityNames, selectEntity } = reader;
 
   useEffect(() => {
     startDemo();
   }, [startDemo]);
-
-  useEffect(() => {
-    if (!book) return;
-    recordPosition(book.metadata.id, engine.currentTime);
-  }, [book, engine.currentTime, recordPosition]);
-
-  useEffect(() => {
-    if (!chapter || !book) return;
-    if (lastChapterRef.current === chapter.id) return;
-    lastChapterRef.current = chapter.id;
-    record({
-      bookId: book.metadata.id,
-      atSeconds: engine.currentTime,
-      kind: "chapter-reached",
-      label: chapter.title,
-    });
-  }, [chapter, book, engine.currentTime, record]);
 
   if (!book) {
     return (
@@ -120,12 +89,6 @@ function ReaderContent() {
       </div>
     );
   }
-
-  const selectEntity = (id: string) => {
-    setSelectedEntityId(id);
-    const name = entityNames[id] ?? id;
-    record({ bookId: book.metadata.id, atSeconds: engine.currentTime, kind: "entity-opened", label: name });
-  };
 
   return (
     <div className="space-y-4">
@@ -148,6 +111,20 @@ function ReaderContent() {
             Auto-scroll {autoScroll ? "on" : "off"}
           </button>
           <Link
+            to="/spatial-reader"
+            search={{ book: book.metadata.id, t: Math.floor(engine.currentTime) }}
+            className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-secondary"
+          >
+            Spatial mode
+          </Link>
+          <Link
+      <p className="font-mono text-[10px] text-muted-foreground">
+        timeline authority: {engine.authority.replace("-", " ")} ·{" "}
+        {engine.authority === "audio-element"
+          ? "driven by the real audio stream"
+          : "demo fallback — a real stream takes over automatically when a provider supplies one"}
+      </p>
+
             to="/graph"
             search={{ node: undefined }}
             className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-secondary"
@@ -208,6 +185,7 @@ function ReaderContent() {
               entity={selectedEntity}
               book={book}
               chapterId={chapter?.id ?? book.chapters[0]!.id}
+            atLabel={formatTime(engine.currentTime)}
               onClose={() => setSelectedEntityId(null)}
               onAsk={(q) => setPendingQuestion(q)}
               onRelated={selectEntity}
@@ -222,7 +200,9 @@ function ReaderContent() {
             book={book}
             atSeconds={engine.currentTime}
             chapterId={chapter?.id ?? book.chapters[0]!.id}
-            transcriptWindow={transcriptEngine?.contextWindow(engine.currentTime) ?? ""}
+            transcriptWindow={reader.contextWindow}
+            currentSentence={segment?.text ?? ""}
+            activeEntities={attention.filter((a) => a.level <= 2).map((a) => a.entity.name)}
             selectedEntity={selectedEntity}
             pendingQuestion={pendingQuestion}
             onConsumedQuestion={() => setPendingQuestion(null)}
