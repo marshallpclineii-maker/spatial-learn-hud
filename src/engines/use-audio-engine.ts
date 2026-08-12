@@ -36,12 +36,18 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
   const spokenSegmentRef = useRef<string | null>(null);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const hasFile = Boolean(book?.audio.src);
+  const isCompanion = book?.audio.timelineMode === "companion";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     // A real audio stream always wins: it becomes the authoritative timeline.
     if (hasFile) {
       setMode("file");
+      return;
+    }
+    if (isCompanion) {
+      setMode("clock");
+      setNotice("Companion timeline — play the title in your provider's app and scrub here to match.");
       return;
     }
     if ("speechSynthesis" in window) {
@@ -54,7 +60,7 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
     setMode("clock");
     setNotice("No speech engine on this device — following the silent timeline.");
     return;
-  }, [hasFile]);
+  }, [hasFile, isCompanion]);
 
   // Real audio element — created only when the book ships an actual stream.
   useEffect(() => {

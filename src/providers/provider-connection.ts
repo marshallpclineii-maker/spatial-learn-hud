@@ -1,5 +1,6 @@
 import type { AudiobookProvider } from "./audiobook-provider";
 import { demoProvider } from "./demo-provider";
+import { userImportProvider } from "./user-import-provider";
 
 /**
  * Provider connection architecture.
@@ -13,7 +14,7 @@ import { demoProvider } from "./demo-provider";
  * actually configured and has returned data.
  */
 
-export type ConnectionTier = "authorized" | "companion" | "demo";
+export type ConnectionTier = "authorized" | "personal" | "companion" | "demo";
 
 export type ConnectionStatus =
   | "connected"
@@ -53,6 +54,22 @@ const none: ProviderCapabilities = {
 
 export const providerConnections: ProviderConnection[] = [
   {
+    id: "personal-import",
+    name: "My own audiobooks (device import)",
+    tier: "personal",
+    status: "connected",
+    statusDetail:
+      "The only path that gives this app a real personal library today. You supply a DRM-free audio file you own and/or a transcript; the book, timeline, entities, graph and knowledge layer are built and stored on this device. Nothing is uploaded and no provider credentials are involved.",
+    capabilities: {
+      libraryMetadata: true,
+      chapters: true,
+      playbackPosition: true,
+      authorizedPlayback: true,
+      transcript: true,
+    },
+    provider: userImportProvider,
+  },
+  {
     id: "demo",
     name: "Demo Library",
     tier: "demo",
@@ -74,7 +91,7 @@ export const providerConnections: ProviderConnection[] = [
     tier: "companion",
     status: "companion-only",
     statusDetail:
-      "No authorized Audible integration is available to this app, so nothing is connected. Audible Companion Mode opens your title in Audible; playback and your library stay entirely inside Audible.",
+      "Audible publishes no public API, OAuth flow, developer program or partner endpoint for personal library, playback position or audio access, and its downloads are DRM-protected. There is therefore nothing to authenticate against and nothing is connected. Two legitimate paths remain: open the title in Audible (companion mode), and run this app's knowledge layer alongside it in companion timeline mode by importing the title's metadata, running time and a transcript you are entitled to use.",
     capabilities: none,
     companionUrl: "https://www.audible.com/library/titles",
   },

@@ -6,7 +6,7 @@ import { KnowledgeCard } from "@/components/reader/knowledge-hud";
 import { PlayerBar } from "@/components/reader/player-bar";
 import { useReaderState } from "@/engines/use-reader-state";
 import { formatTime } from "@/engines/transcript-engine";
-import { demoProvider } from "@/providers/demo-provider";
+import { getBookAnywhere } from "@/providers/registry";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useWebXrSupport } from "@/xr/use-webxr-support";
 
@@ -18,7 +18,7 @@ interface SpatialSearch {
 }
 
 const bookQuery = (bookId: string) =>
-  queryOptions({ queryKey: ["book", bookId], queryFn: () => demoProvider.getBook(bookId) });
+  queryOptions({ queryKey: ["book", bookId], queryFn: () => getBookAnywhere(bookId) });
 
 export const Route = createFileRoute("/spatial-reader")({
   validateSearch: (search: Record<string, unknown>): SpatialSearch => ({

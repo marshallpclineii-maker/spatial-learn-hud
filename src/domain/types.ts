@@ -41,6 +41,12 @@ export interface AudioTrack {
   mimeType?: string;
   durationSeconds: number;
   attribution: string;
+  /**
+   * "companion" means the real audio plays elsewhere (the provider's own app):
+   * this app follows a user-controlled timeline and must never synthesize
+   * narration over it.
+   */
+  timelineMode?: "companion";
 }
 
 export interface Chapter {

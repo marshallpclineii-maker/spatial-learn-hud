@@ -7,7 +7,7 @@ import { PlayerBar } from "@/components/reader/player-bar";
 import { TranscriptView } from "@/components/reader/transcript-view";
 import { formatTime } from "@/engines/transcript-engine";
 import { useReaderState } from "@/engines/use-reader-state";
-import { demoProvider } from "@/providers/demo-provider";
+import { getBookAnywhere } from "@/providers/registry";
 import { useDemoSession } from "@/state/demo-session";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +20,7 @@ interface ReaderSearch {
 const bookQuery = (bookId: string) =>
   queryOptions({
     queryKey: ["book", bookId],
-    queryFn: () => demoProvider.getBook(bookId),
+    queryFn: () => getBookAnywhere(bookId),
   });
 
 export const Route = createFileRoute("/reader")({

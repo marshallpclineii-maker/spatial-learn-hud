@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-type Maturity = "real" | "demo" | "external-api" | "provider" | "webxr" | "future";
+type Maturity = "real" | "demo" | "external-api" | "provider" | "webxr" | "future" | "impossible";
 
 const BADGE: Record<Maturity, { label: string; className: string }> = {
   real: { label: "Real", className: "border-primary/50 bg-primary/10 text-primary" },
@@ -9,9 +9,28 @@ const BADGE: Record<Maturity, { label: string; className: string }> = {
   provider: { label: "Needs authorized provider", className: "border-dashed border-border text-muted-foreground" },
   webxr: { label: "WebXR-ready", className: "border-primary/40 text-primary" },
   future: { label: "Future work", className: "border-dashed border-border text-muted-foreground" },
+  impossible: { label: "Not possible in a browser", className: "border-destructive/50 text-destructive" },
 };
 
 const ROWS: Array<{ area: string; state: Maturity; detail: string }> = [
+  {
+    area: "Audible account / library integration",
+    state: "impossible",
+    detail:
+      "Audible exposes no public API, OAuth flow, developer program or partner endpoint for personal identity, library, chapters, playback position or audio, and its files are DRM-protected. A browser also cannot read another origin's session, so nothing can be pulled from an Audible tab without scraping or credential capture, which this app will not do. No connected state is ever shown.",
+  },
+  {
+    area: "Personal library via device import (UserImportProvider)",
+    state: "real",
+    detail:
+      "The strongest legitimate path, and it is implemented: import a DRM-free audio file you own and/or a transcript, and the pipeline builds a UniversalBookObject — timed transcript (SRT/VTT timings preserved, prose distributed by word count), extracted entities, knowledge graph and definitions — stored in IndexedDB on your device.",
+  },
+  {
+    area: "Companion timeline mode",
+    state: "provider",
+    detail:
+      "For DRM-protected titles: play in Audible's own app, import the title's running time and transcript here, and the knowledge layer runs against a user-controlled timeline you scrub to match. Not audio-authoritative, and labelled as such in the player.",
+  },
   {
     area: "UniversalBookObject + AudiobookProvider",
     state: "real",

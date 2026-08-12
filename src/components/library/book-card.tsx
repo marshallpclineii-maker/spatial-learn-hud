@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, ExternalLink, Glasses, Play } from "lucide-react";
+import { BookOpen, ExternalLink, Glasses, Play, Trash2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { BookSummary } from "@/domain/types";
 import { formatTime } from "@/engines/transcript-engine";
+import { deletePersonalRecord } from "@/personal/personal-store";
+import type { BookOrigin } from "@/providers/registry";
 import { cn } from "@/lib/utils";
 
 const ACCENTS: Record<string, string> = {
@@ -11,9 +14,10 @@ const ACCENTS: Record<string, string> = {
   slate: "from-muted/60 to-muted/10",
 };
 
-export function BookCard({ book }: { book: BookSummary }) {
+export function BookCard({ book, origin = "demo" }: { book: BookSummary; origin?: BookOrigin }) {
   const { metadata: m, hasFullExperience } = book;
   const audible = m.externalLinks.audibleUrl;
+  const queryClient = useQueryClient();
 
   return (
     <article className="glass group flex flex-col overflow-hidden rounded-xl transition-shadow hover:shadow-[0_0_40px_var(--glow)]">
@@ -23,8 +27,18 @@ export function BookCard({ book }: { book: BookSummary }) {
           ACCENTS[m.coverAccent] ?? ACCENTS['slate'],
         )}
       >
-        <div className="absolute top-3 right-3 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
-          {hasFullExperience ? "full experience" : "catalog only"}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1 font-mono text-[10px] tracking-widest uppercase">
+          <span
+            className={cn(
+              "rounded-full border px-2 py-0.5",
+              origin === "personal"
+                ? "border-primary/50 bg-primary/10 text-primary"
+                : "border-dashed border-border text-muted-foreground",
+            )}
+          >
+            {origin}
+          </span>
+          <span className="text-muted-foreground">{hasFullExperience ? "full experience" : "catalog only"}</span>
         </div>
         <div>
           <h3 className="text-lg leading-tight font-semibold">{m.title}</h3>
@@ -108,6 +122,19 @@ export function BookCard({ book }: { book: BookSummary }) {
               className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs text-muted-foreground opacity-60"
             >
               <BookOpen className="size-3.5" /> Read
+            </button>
+          )}
+
+          {origin === "personal" && (
+            <button
+              onClick={() => {
+                void deletePersonalRecord(m.id).then(() =>
+                  queryClient.invalidateQueries({ queryKey: ["books", "all"] }),
+                );
+              }}
+              className="col-span-2 flex items-center justify-center gap-1.5 rounded-md border border-destructive/40 px-3 py-2 text-xs text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="size-3.5" /> Remove from this device
             </button>
           )}
         </div>

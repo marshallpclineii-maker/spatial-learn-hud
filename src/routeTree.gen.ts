@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as ConnectRouteImport } from './routes/connect'
 import { Route as GraphRouteImport } from './routes/graph'
+import { Route as ImportRouteImport } from './routes/import'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as ReaderRouteImport } from './routes/reader'
 import { Route as SpatialReaderRouteImport } from './routes/spatial-reader'
@@ -36,6 +37,11 @@ const ConnectRoute = ConnectRouteImport.update({
 const GraphRoute = GraphRouteImport.update({
   id: '/graph',
   path: '/graph',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImportRoute = ImportRouteImport.update({
+  id: '/import',
+  path: '/import',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LibraryRoute = LibraryRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/architecture': typeof ArchitectureRoute
   '/connect': typeof ConnectRoute
   '/graph': typeof GraphRoute
+  '/import': typeof ImportRoute
   '/library': typeof LibraryRoute
   '/reader': typeof ReaderRoute
   '/spatial-reader': typeof SpatialReaderRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/architecture': typeof ArchitectureRoute
   '/connect': typeof ConnectRoute
   '/graph': typeof GraphRoute
+  '/import': typeof ImportRoute
   '/library': typeof LibraryRoute
   '/reader': typeof ReaderRoute
   '/spatial-reader': typeof SpatialReaderRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/architecture': typeof ArchitectureRoute
   '/connect': typeof ConnectRoute
   '/graph': typeof GraphRoute
+  '/import': typeof ImportRoute
   '/library': typeof LibraryRoute
   '/reader': typeof ReaderRoute
   '/spatial-reader': typeof SpatialReaderRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/architecture'
     | '/connect'
     | '/graph'
+    | '/import'
     | '/library'
     | '/reader'
     | '/spatial-reader'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/architecture'
     | '/connect'
     | '/graph'
+    | '/import'
     | '/library'
     | '/reader'
     | '/spatial-reader'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/architecture'
     | '/connect'
     | '/graph'
+    | '/import'
     | '/library'
     | '/reader'
     | '/spatial-reader'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   ArchitectureRoute: typeof ArchitectureRoute
   ConnectRoute: typeof ConnectRoute
   GraphRoute: typeof GraphRoute
+  ImportRoute: typeof ImportRoute
   LibraryRoute: typeof LibraryRoute
   ReaderRoute: typeof ReaderRoute
   SpatialReaderRoute: typeof SpatialReaderRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/graph'
       fullPath: '/graph'
       preLoaderRoute: typeof GraphRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/import': {
+      id: '/import'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof ImportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/library': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArchitectureRoute: ArchitectureRoute,
   ConnectRoute: ConnectRoute,
   GraphRoute: GraphRoute,
+  ImportRoute: ImportRoute,
   LibraryRoute: LibraryRoute,
   ReaderRoute: ReaderRoute,
   SpatialReaderRoute: SpatialReaderRoute,
