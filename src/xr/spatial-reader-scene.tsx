@@ -55,7 +55,7 @@ export default function SpatialReaderScene({
             return (
               <Text
                 key={s.id}
-                position={[col, 0.72 - row * 0.72, 0.02]}
+                position={[col, 0.72 - row * 0.72, 0.14]}
                 maxWidth={1.7}
                 fontSize={0.082}
                 lineHeight={1.35}
