@@ -14,10 +14,22 @@ const ACCENTS: Record<string, string> = {
   slate: "from-muted/60 to-muted/10",
 };
 
-export function BookCard({ book, origin = "demo" }: { book: BookSummary; origin?: BookOrigin }) {
+const LINK_LABEL: Record<string, string> = {
+  audible: "Open in Audible",
+  "libro-fm": "Open in Libro.fm",
+  source: "Read the source text",
+};
+
+export function BookCard({ book, origin }: { book: BookSummary; origin?: BookOrigin }) {
   const { metadata: m, hasFullExperience } = book;
-  const audible = m.externalLinks.audibleUrl;
+  const shownOrigin: BookOrigin = origin ?? book.origin;
   const queryClient = useQueryClient();
+  // Provider-agnostic: the first declared link wins, and a declared-but-null
+  // link renders as an explicit unavailable state rather than disappearing.
+  const linkEntries = Object.entries(m.externalLinks);
+  const primary = linkEntries.find(([, url]) => Boolean(url)) ?? linkEntries[0];
+  const primaryKey = primary?.[0] ?? "audible";
+  const primaryUrl = primary?.[1] ?? null;
 
   return (
     <article className="glass group flex flex-col overflow-hidden rounded-xl transition-shadow hover:shadow-[0_0_40px_var(--glow)]">
