@@ -1,11 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Library, Boxes, Headphones, Network, Plug, RotateCcw, ScrollText } from "lucide-react";
+import { Library, Boxes, Headphones, Network, Plug, Plus, RotateCcw, ScrollText } from "lucide-react";
 import type { ReactNode } from "react";
 import { useDemoSession } from "@/state/demo-session";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/library", label: "My Library", icon: Library },
+  { to: "/import", label: "Add Book", icon: Plus },
   { to: "/virtual-library", label: "Virtual Library", icon: Boxes },
   { to: "/reader", label: "Active Reader", icon: Headphones },
   { to: "/graph", label: "Knowledge Graph", icon: Network },
