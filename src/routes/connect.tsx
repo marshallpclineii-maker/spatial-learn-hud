@@ -104,6 +104,15 @@ function ConnectPage() {
                   <ExternalLink className="size-3.5" /> {c.name} Companion Mode
                 </a>
               )}
+              {c.tier === "companion" && (
+                <Link
+                  to="/import"
+                  search={{ mode: "companion" as const }}
+                  className="rounded-md bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground"
+                >
+                  Start a companion session
+                </Link>
+              )}
               {c.status === "not-configured" && (
                 <span className="flex items-center gap-1.5 rounded-md border border-dashed border-border px-3 py-2 text-xs text-muted-foreground">
                   <Plug className="size-3.5" /> Adapter not implemented yet

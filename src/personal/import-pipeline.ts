@@ -274,13 +274,13 @@ export function buildImportedBook(input: ImportInput): UniversalBookObject {
       coverAccent: "cyan",
       themes: ["Personal"],
       license: "Personal copy — supplied by you, stored only on this device",
-      externalLinks: { audibleUrl: input.audibleUrl?.trim() || null },
+      externalLinks: { audible: input.audibleUrl?.trim() || null },
       durationSeconds: duration,
     },
     audio: {
       src: null,
       durationSeconds: duration,
-      ...(input.hasAudioFile ? {} : { timelineMode: "companion" as const }),
+      timelineMode: input.hasAudioFile ? ("local" as const) : ("companion" as const),
       attribution: input.hasAudioFile
         ? "Local file supplied by the listener; never uploaded."
         : "No audio in this app — the provider's own app remains the player.",

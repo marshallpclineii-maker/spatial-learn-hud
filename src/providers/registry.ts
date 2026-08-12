@@ -1,4 +1,4 @@
-import type { BookSummary, UniversalBookObject } from "@/domain/types";
+import type { BookOrigin, BookSummary, UniversalBookObject } from "@/domain/types";
 import type { AudiobookProvider } from "./audiobook-provider";
 import { demoProvider } from "./demo-provider";
 import { userImportProvider } from "./user-import-provider";
@@ -9,7 +9,7 @@ import { userImportProvider } from "./user-import-provider";
  * personal and connected-provider content are never silently mixed.
  */
 
-export type BookOrigin = "demo" | "personal" | "connected";
+export type { BookOrigin };
 
 export const ORIGIN_LABEL: Record<BookOrigin, string> = {
   demo: "Demo content",
@@ -17,32 +17,25 @@ export const ORIGIN_LABEL: Record<BookOrigin, string> = {
   connected: "Connected provider content",
 };
 
-export interface LibraryEntry extends BookSummary {
-  origin: BookOrigin;
-  providerId: string;
-}
-
-interface RegisteredProvider {
-  provider: AudiobookProvider;
-  origin: BookOrigin;
-}
+/** Every summary already carries its own origin and provider id. */
+export type LibraryEntry = BookSummary;
 
 /**
  * No authorized Audible integration exists, so no provider is registered with
  * origin "connected". A connected provider appears here only when a real
  * authorized adapter is implemented — never as a placeholder.
  */
-const registered: RegisteredProvider[] = [
-  { provider: userImportProvider, origin: "personal" },
-  { provider: demoProvider, origin: "demo" },
-];
+const registered: AudiobookProvider[] = [userImportProvider, demoProvider];
+
+export function registeredProviders(): AudiobookProvider[] {
+  return registered;
+}
 
 export async function listAllBooks(): Promise<LibraryEntry[]> {
   const results = await Promise.all(
-    registered.map(async ({ provider, origin }) => {
+    registered.map(async (provider) => {
       try {
-        const books = await provider.listBooks();
-        return books.map((b) => ({ ...b, origin, providerId: provider.id }));
+        return await provider.listBooks();
       } catch {
         return [] as LibraryEntry[];
       }
@@ -52,7 +45,7 @@ export async function listAllBooks(): Promise<LibraryEntry[]> {
 }
 
 export async function getBookAnywhere(bookId: string): Promise<UniversalBookObject | null> {
-  for (const { provider } of registered) {
+  for (const provider of registered) {
     try {
       const book = await provider.getBook(bookId);
       if (book) return book;
@@ -61,8 +54,4 @@ export async function getBookAnywhere(bookId: string): Promise<UniversalBookObje
     }
   }
   return null;
-}
-
-export function originOf(bookId: string): BookOrigin {
-  return bookId.startsWith("personal-") ? "personal" : "demo";
 }

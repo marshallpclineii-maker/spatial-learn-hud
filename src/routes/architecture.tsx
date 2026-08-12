@@ -17,7 +17,7 @@ const ROWS: Array<{ area: string; state: Maturity; detail: string }> = [
     area: "Audible account / library integration",
     state: "impossible",
     detail:
-      "Audible exposes no public API, OAuth flow, developer program or partner endpoint for personal identity, library, chapters, playback position or audio, and its files are DRM-protected. A browser also cannot read another origin's session, so nothing can be pulled from an Audible tab without scraping or credential capture, which this app will not do. No connected state is ever shown.",
+      "Audible exposes no public API, OAuth flow, developer program or partner endpoint for personal identity, library, chapters, playback position or audio, and its files are DRM-protected. Login with Amazon returns an Amazon identity, not Audible entitlements. A browser also cannot read another origin's session, so after you sign into Audible this app receives literally nothing — no cookie, token, DOM or response. The only alternatives would be scraping or replaying the private mobile-app auth flow, and this app does neither. No connected state is ever shown.",
   },
   {
     area: "Personal library via device import (UserImportProvider)",
@@ -29,12 +29,13 @@ const ROWS: Array<{ area: string; state: Maturity; detail: string }> = [
     area: "Companion timeline mode",
     state: "provider",
     detail:
-      "For DRM-protected titles: play in Audible's own app, import the title's running time and transcript here, and the knowledge layer runs against a user-controlled timeline you scrub to match. Not audio-authoritative, and labelled as such in the player.",
+      "For DRM-protected titles: play in Audible's own app, import the title's running time and transcript here, and the knowledge layer runs against a user-controlled timeline with ±1s/±5s drift correction in the player. Never audio-authoritative and never narrated over, and labelled as such. Automatic alignment by listening to room audio is possible in principle but not implemented.",
   },
   {
     area: "UniversalBookObject + AudiobookProvider",
     state: "real",
-    detail: "Every surface (reader, HUD, graph, 3D, spatial reader) consumes the same provider-agnostic object.",
+    detail:
+      "Every surface (reader, HUD, graph, 3D, spatial reader) consumes the same provider-agnostic object. Providers declare their own origin and capabilities and may implement optional getPlaybackPosition / reportPlaybackPosition / getStreamUrl, and timelineMode is local | companion | provider — so an authorized provider is registered, not retrofitted. External links are keyed by provider id rather than hardcoded to Audible.",
   },
   {
     area: "Transcript / attention / knowledge engines",

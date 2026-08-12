@@ -14,10 +14,22 @@ const ACCENTS: Record<string, string> = {
   slate: "from-muted/60 to-muted/10",
 };
 
-export function BookCard({ book, origin = "demo" }: { book: BookSummary; origin?: BookOrigin }) {
+const LINK_LABEL: Record<string, string> = {
+  audible: "Open in Audible",
+  "libro-fm": "Open in Libro.fm",
+  source: "Read the source text",
+};
+
+export function BookCard({ book, origin }: { book: BookSummary; origin?: BookOrigin }) {
   const { metadata: m, hasFullExperience } = book;
-  const audible = m.externalLinks.audibleUrl;
+  const shownOrigin: BookOrigin = origin ?? book.origin;
   const queryClient = useQueryClient();
+  // Provider-agnostic: the first declared link wins, and a declared-but-null
+  // link renders as an explicit unavailable state rather than disappearing.
+  const linkEntries = Object.entries(m.externalLinks);
+  const primary = linkEntries.find(([, url]) => Boolean(url)) ?? linkEntries[0];
+  const primaryKey = primary?.[0] ?? "audible";
+  const primaryUrl = primary?.[1] ?? null;
 
   return (
     <article className="glass group flex flex-col overflow-hidden rounded-xl transition-shadow hover:shadow-[0_0_40px_var(--glow)]">
@@ -31,12 +43,12 @@ export function BookCard({ book, origin = "demo" }: { book: BookSummary; origin?
           <span
             className={cn(
               "rounded-full border px-2 py-0.5",
-              origin === "personal"
+              shownOrigin === "personal"
                 ? "border-primary/50 bg-primary/10 text-primary"
                 : "border-dashed border-border text-muted-foreground",
             )}
           >
-            {origin}
+            {shownOrigin}
           </span>
           <span className="text-muted-foreground">{hasFullExperience ? "full experience" : "catalog only"}</span>
         </div>
@@ -81,19 +93,19 @@ export function BookCard({ book, origin = "demo" }: { book: BookSummary; origin?
             </button>
           )}
 
-          {audible ? (
+          {primaryUrl ? (
             <a
-              href={audible}
+              href={primaryUrl}
               target="_blank"
               rel="noreferrer noopener"
               className="flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs transition-colors hover:bg-secondary"
             >
-              <ExternalLink className="size-3.5" /> Open in Audible
+              <ExternalLink className="size-3.5" /> {LINK_LABEL[primaryKey] ?? "Open externally"}
             </a>
           ) : (
             <button
               disabled
-              title="No valid Audible listing for this title"
+              title="No external listing recorded for this title"
               className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-md border border-dashed border-border px-3 py-2 text-xs text-muted-foreground opacity-60"
             >
               <ExternalLink className="size-3.5" /> Unavailable
@@ -125,7 +137,7 @@ export function BookCard({ book, origin = "demo" }: { book: BookSummary; origin?
             </button>
           )}
 
-          {origin === "personal" && (
+          {shownOrigin === "personal" && (
             <button
               onClick={() => {
                 void deletePersonalRecord(m.id).then(() =>

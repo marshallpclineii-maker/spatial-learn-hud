@@ -1,4 +1,5 @@
-import type { AudiobookProvider } from "./audiobook-provider";
+import type { AudiobookProvider, ProviderCapabilities } from "./audiobook-provider";
+import { NO_CAPABILITIES } from "./audiobook-provider";
 import { demoProvider } from "./demo-provider";
 import { userImportProvider } from "./user-import-provider";
 
@@ -22,13 +23,7 @@ export type ConnectionStatus =
   | "companion-only"
   | "unavailable";
 
-export interface ProviderCapabilities {
-  libraryMetadata: boolean;
-  chapters: boolean;
-  playbackPosition: boolean;
-  authorizedPlayback: boolean;
-  transcript: boolean;
-}
+export type { ProviderCapabilities };
 
 export interface ProviderConnection {
   id: string;
@@ -44,13 +39,7 @@ export interface ProviderConnection {
   provider?: AudiobookProvider;
 }
 
-const none: ProviderCapabilities = {
-  libraryMetadata: false,
-  chapters: false,
-  playbackPosition: false,
-  authorizedPlayback: false,
-  transcript: false,
-};
+const none: ProviderCapabilities = NO_CAPABILITIES;
 
 export const providerConnections: ProviderConnection[] = [
   {
@@ -60,13 +49,8 @@ export const providerConnections: ProviderConnection[] = [
     status: "connected",
     statusDetail:
       "The only path that gives this app a real personal library today. You supply a DRM-free audio file you own and/or a transcript; the book, timeline, entities, graph and knowledge layer are built and stored on this device. Nothing is uploaded and no provider credentials are involved.",
-    capabilities: {
-      libraryMetadata: true,
-      chapters: true,
-      playbackPosition: true,
-      authorizedPlayback: true,
-      transcript: true,
-    },
+    // Declared by the provider itself — never restated by hand here.
+    capabilities: userImportProvider.capabilities,
     provider: userImportProvider,
   },
   {
@@ -76,13 +60,7 @@ export const providerConnections: ProviderConnection[] = [
     status: "connected",
     statusDetail:
       "Local public-domain proof-of-concept content. Clearly labelled demo — not a provider account.",
-    capabilities: {
-      libraryMetadata: true,
-      chapters: true,
-      playbackPosition: true,
-      authorizedPlayback: true,
-      transcript: true,
-    },
+    capabilities: demoProvider.capabilities,
     provider: demoProvider,
   },
   {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { UniversalBookObject } from "@/domain/types";
+import type { TimelineMode, UniversalBookObject } from "@/domain/types";
 
 export type NarrationMode = "speech" | "file" | "clock";
 
@@ -13,7 +13,12 @@ export interface AudioEngineState {
 }
 
 /** Which clock the rest of the pipeline is synchronized to. */
-export type TimelineAuthority = "audio-element" | "speech-clock" | "simulated-clock";
+export type TimelineAuthority =
+  | "audio-element"
+  | "speech-clock"
+  | "companion-clock"
+  | "provider-reported"
+  | "simulated-clock";
 
 /**
  * Shared timestamp clock for player + transcript.
@@ -36,7 +41,9 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
   const spokenSegmentRef = useRef<string | null>(null);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const hasFile = Boolean(book?.audio.src);
-  const isCompanion = book?.audio.timelineMode === "companion";
+  const timelineMode: TimelineMode = book?.audio.timelineMode ?? (hasFile ? "local" : "local");
+  const isCompanion = timelineMode === "companion";
+  const isProviderTimeline = timelineMode === "provider";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -50,6 +57,11 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
       setNotice("Companion timeline — play the title in your provider's app and scrub here to match.");
       return;
     }
+    if (isProviderTimeline) {
+      setMode("clock");
+      setNotice("Position reported by the authorized provider.");
+      return;
+    }
     if ("speechSynthesis" in window) {
       setMode("speech");
       const check = () => setVoiceReady(window.speechSynthesis.getVoices().length > 0);
@@ -60,7 +72,7 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
     setMode("clock");
     setNotice("No speech engine on this device — following the silent timeline.");
     return;
-  }, [hasFile, isCompanion]);
+  }, [hasFile, isCompanion, isProviderTimeline]);
 
   // Real audio element — created only when the book ships an actual stream.
   useEffect(() => {
@@ -137,7 +149,8 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
 
   // Narrate whichever segment the clock is inside.
   useEffect(() => {
-    if (!book || !isPlaying || mode !== "speech") return;
+    // Companion and provider timelines must never speak over real playback.
+    if (!book || !isPlaying || mode !== "speech" || isCompanion || isProviderTimeline) return;
     const segment = book.transcript.find(
       (s) => currentTime >= s.startSeconds && currentTime < s.endSeconds,
     );
@@ -145,7 +158,7 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
     if (spokenSegmentRef.current === segment.id) return;
     spokenSegmentRef.current = segment.id;
     speakSegment(segment.text, segment.endSeconds - segment.startSeconds);
-  }, [book, currentTime, isPlaying, mode, speakSegment]);
+  }, [book, currentTime, isPlaying, mode, speakSegment, isCompanion, isProviderTimeline]);
 
   const play = useCallback(() => {
     if (!book) return;
@@ -193,8 +206,38 @@ export function useAudioEngine(book: UniversalBookObject | null, startAt = 0) {
 
   useEffect(() => () => stopSpeech(), [stopSpeech]);
 
+  /** Companion drift correction: nudge the clock by ±seconds without stopping. */
+  const nudge = useCallback(
+    (deltaSeconds: number) => {
+      const clamped = Math.min(Math.max(0, timeRef.current + deltaSeconds), duration);
+      timeRef.current = clamped;
+      setCurrentTime(clamped);
+      if (audioElRef.current) audioElRef.current.currentTime = clamped;
+    },
+    [duration],
+  );
+
   const state: AudioEngineState = { currentTime, isPlaying, speed, mode, voiceReady, notice };
   const authority: TimelineAuthority =
-    mode === "file" ? "audio-element" : mode === "speech" ? "speech-clock" : "simulated-clock";
-  return { ...state, authority, duration, play, pause, toggle, seek, setSpeed: changeSpeed };
+    mode === "file"
+      ? "audio-element"
+      : isProviderTimeline
+        ? "provider-reported"
+        : isCompanion
+          ? "companion-clock"
+          : mode === "speech"
+            ? "speech-clock"
+            : "simulated-clock";
+  return {
+    ...state,
+    authority,
+    timelineMode,
+    duration,
+    play,
+    pause,
+    toggle,
+    seek,
+    nudge,
+    setSpeed: changeSpeed,
+  };
 }

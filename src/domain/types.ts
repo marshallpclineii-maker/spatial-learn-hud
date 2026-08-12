@@ -15,6 +15,22 @@ export type EntityType =
 /** Attention priority: 1 = must surface, 2 = surface subtly, 3 = on demand. */
 export type AttentionLevel = 1 | 2 | 3;
 
+/**
+ * Outbound links keyed by provider id ("audible", "libro-fm", "source", …).
+ * A `null` value means the link is known to be unavailable for this title, so
+ * the UI can render an explicit unavailable state instead of hiding it.
+ */
+export type ExternalLinks = Record<string, string | null>;
+
+/**
+ * Where a title came from. Kept in the domain model so no surface has to
+ * infer origin from ids or provider names.
+ *  - "demo"      — bundled public-domain proof-of-concept content.
+ *  - "personal"  — imported by the listener, stored on their device.
+ *  - "connected" — returned by a genuinely authorized provider integration.
+ */
+export type BookOrigin = "demo" | "personal" | "connected";
+
 export interface BookMetadata {
   id: string;
   title: string;
@@ -27,13 +43,18 @@ export interface BookMetadata {
   coverAccent: string;
   themes: string[];
   license: string;
-  externalLinks: {
-    /** Null means: no valid link — the UI must show it as unavailable. */
-    audibleUrl: string | null;
-    sourceUrl?: string;
-  };
+  externalLinks: ExternalLinks;
   durationSeconds: number;
 }
+
+/**
+ * Which clock owns the timeline for this title.
+ *  - "local"     — an audio file in this app is authoritative.
+ *  - "companion" — audio plays in the provider's own app; this app follows a
+ *                  user-controlled clock and must never synthesize narration.
+ *  - "provider"  — an authorized provider reports the position.
+ */
+export type TimelineMode = "local" | "companion" | "provider";
 
 export interface AudioTrack {
   /** Optional streamed file. When null, the engine narrates via speech synthesis. */
@@ -41,12 +62,8 @@ export interface AudioTrack {
   mimeType?: string;
   durationSeconds: number;
   attribution: string;
-  /**
-   * "companion" means the real audio plays elsewhere (the provider's own app):
-   * this app follows a user-controlled timeline and must never synthesize
-   * narration over it.
-   */
-  timelineMode?: "companion";
+  /** Defaults to "local". */
+  timelineMode?: TimelineMode;
 }
 
 export interface Chapter {
@@ -158,4 +175,7 @@ export interface BookSummary {
   metadata: BookMetadata;
   /** Books without full content are catalog-only entries. */
   hasFullExperience: boolean;
+  /** Where this title came from — recorded at the source, never inferred. */
+  origin: BookOrigin;
+  providerId: string;
 }

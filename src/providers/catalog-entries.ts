@@ -13,7 +13,7 @@ export const catalogOnlyBooks: BookMetadata[] = [
     coverAccent: "amber",
     themes: ["Philosophy"],
     license: "Public domain (Jowett translation)",
-    externalLinks: { audibleUrl: "https://www.audible.com/search?keywords=Plato+Republic" },
+    externalLinks: { audible: "https://www.audible.com/search?keywords=Plato+Republic" },
     durationSeconds: 1620,
   },
   {
@@ -27,7 +27,7 @@ export const catalogOnlyBooks: BookMetadata[] = [
     coverAccent: "emerald",
     themes: ["Science"],
     license: "Public domain (1859)",
-    externalLinks: { audibleUrl: "https://www.audible.com/search?keywords=Origin+of+Species" },
+    externalLinks: { audible: "https://www.audible.com/search?keywords=Origin+of+Species" },
     durationSeconds: 4980,
   },
   {
@@ -41,7 +41,7 @@ export const catalogOnlyBooks: BookMetadata[] = [
     coverAccent: "slate",
     themes: ["Artificial Intelligence", "Philosophy"],
     license: "Archival — rights unclear",
-    externalLinks: { audibleUrl: null },
+    externalLinks: { audible: null },
     durationSeconds: 2400,
   },
 ];
